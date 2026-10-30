@@ -2,15 +2,19 @@ const bcrypt = require("bcryptjs");
 const { Admin } = require("../models/User");
 
 const createDefaultAdmin = async () => {
+  const isProduction = process.env.NODE_ENV === "production";
+  const email =
+    process.env.DEFAULT_ADMIN_EMAIL ||
+    (isProduction ? "" : "admin@gmail.com");
+  const password =
+    process.env.DEFAULT_ADMIN_PASSWORD ||
+    (isProduction ? "" : "12345678");
+
+  if (!email || !password) {
+    throw new Error("DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD must be configured");
+  }
+
   try {
-    const email =
-      process.env.DEFAULT_ADMIN_EMAIL ||
-      "admin@gmail.com";
-
-    const password =
-      process.env.DEFAULT_ADMIN_PASSWORD ||
-      "12345678";
-
     const existingAdmin = await Admin.findOne({
       email: email.toLowerCase(),
     });

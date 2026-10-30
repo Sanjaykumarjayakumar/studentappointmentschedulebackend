@@ -32,7 +32,17 @@ MIDDLEWARE
 
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      const configuredOrigins = (process.env.CORS_ORIGINS || "")
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean);
+      const isLocalOrigin =
+        process.env.NODE_ENV !== "production" &&
+        /^https?:\/\/localhost(?::\d+)?$/.test(origin || "");
+
+      callback(null, !origin || configuredOrigins.includes(origin) || isLocalOrigin);
+    },
     credentials: true,
   })
 );
