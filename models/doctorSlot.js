@@ -1,0 +1,39 @@
+const mongoose = require('mongoose');
+const doctorSlotSchema = new mongoose.Schema({
+    doctor:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Doctor',
+        required:true,
+    },
+    date:{
+        type:String,
+        required:true,
+    },
+    startTime:{
+        type:String,
+        required:true,
+    },
+    endTime:{
+        type:String,
+        default:null,
+    },
+    maxAppointments:{
+        type:Number,
+        required:true,
+        min:1,
+    },
+    bookedAppointments:{
+        type:Number,
+        default:0,
+    },
+    status:{
+        type:String,
+        enum:["available","full","cancelled"],
+        default:"available",
+    },
+},{
+    timestamps:true,
+    collection:'slots',
+});
+doctorSlotSchema.index({doctor:1,date:1,startTime:1,endTime:1},{unique:true});
+module.exports = mongoose.model('DoctorSlot',doctorSlotSchema);
